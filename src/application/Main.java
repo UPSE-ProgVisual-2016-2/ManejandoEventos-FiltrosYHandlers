@@ -2,6 +2,7 @@ package application;
 	
 import javafx.application.Application;
 import javafx.collections.FXCollections;
+import javafx.geometry.Pos;
 import javafx.stage.Stage;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -34,7 +35,43 @@ public class Main extends Application {
 		launch(args);
 	}
 	
-
+	private static Node createLoginPanel(){
+		//Un control que tiene Toogles y los maneja a todos.
+		//Un toggle es un control que puede pasar entre estados seleccionados y no seleecionados
+		final ToggleGroup toogleGroup = new ToggleGroup();
+		
+		final TextField textField = new TextField();
+		textField.setPrefColumnCount(10);
+		textField.setPromptText("Tu nombre");
+		
+		final PasswordField passwordField = new PasswordField();
+		passwordField.setPrefColumnCount(10);
+		passwordField.setPromptText("Su clave");
+		
+		//El combo box puede ser reescrito, el choiceBox solo muestra texto y solo se puede
+		//seleccionar una opcion.
+		final ChoiceBox<String> choiceBox = new ChoiceBox<>(FXCollections.observableArrayList("English", 
+				"\u0420\u0443\u0441\u0441\u043a\u0438\u0439",
+                "Fran\u00E7ais"));
+		
+		choiceBox.setTooltip(new Tooltip("Selecciona tu lenguaje"));
+		choiceBox.getSelectionModel().select(0);
+		
+		final HBox panel =
+				createHBox(6,
+						createVBox(2,
+								createRadioButton("Alto", toogleGroup, true),
+								createRadioButton("Medio", toogleGroup, false),
+								createRadioButton("Bajo", toogleGroup, false)),
+						createVBox(2, textField, passwordField),
+						choiceBox);
+		
+		panel.setAlignment(Pos.BOTTOM_LEFT);
+		
+		
+		return panel;
+	}
+	
 	private static HBox createHBox(final double spacing, final Node... children)
 	{
 		final HBox hbox = new HBox(spacing);
