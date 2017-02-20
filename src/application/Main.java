@@ -94,6 +94,22 @@ public class Main extends Application {
 		return panel;
 	}
 	
+	private static Node createProgressPanel()
+	{
+		final Slider slider = new Slider();
+		
+		final ProgressIndicator progressIndicator = new ProgressIndicator(0);
+		progressIndicator.progressProperty().bind(
+				Bindings.divide(slider.valueProperty(), slider.maxProperty()));
+		
+		final HBox panel = createHBox(6, 
+										new Label("Progreso: "),
+										slider,
+										progressIndicator);
+		//configureBorder(panel);
+		return panel;
+	}
+	
 	private static HBox createHBox(final double spacing, final Node... children)
 	{
 		final HBox hbox = new HBox(spacing);
