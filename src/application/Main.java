@@ -1,14 +1,20 @@
 package application;
 	
 import javafx.application.Application;
+import javafx.beans.binding.Binding;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
@@ -72,6 +78,22 @@ public class Main extends Application {
 		return panel;
 	}
 	
+	private static Node createConfirmationPanel()
+	{
+		final Label acceptanceLabel = new Label("No Disponible");
+		
+		final Button acceptButton = new Button("Aceptar");
+		acceptButton.setOnAction( e -> acceptanceLabel.setText("Aceptado"));
+		
+		final Button declineButton = new Button("Rechazar");
+		declineButton.setOnAction( e -> acceptanceLabel.setText("Rechazado"));
+		
+		final HBox panel = createHBox(6, acceptButton, declineButton, acceptanceLabel);
+		panel.setAlignment(Pos.CENTER_LEFT);
+		
+		return panel;
+	}
+	
 	private static HBox createHBox(final double spacing, final Node... children)
 	{
 		final HBox hbox = new HBox(spacing);
@@ -85,6 +107,7 @@ public class Main extends Application {
 		return vbox;
 	}
 	
+
 	private static RadioButton createRadioButton(final String text,
 												 final ToggleGroup toogleGroup,
 												 final boolean selected)
