@@ -3,9 +3,12 @@ package application;
 import javafx.application.Application;
 import javafx.beans.binding.Binding;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -18,12 +21,19 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 
 public class Main extends Application {
+	//Los BooleanProperties permiten 
+	//atar una propiedad a una aplicacion
+	private final BooleanProperty dragModeActiveProperty =
+			new SimpleBooleanProperty(this, "dragModeActive", true);
+	
 	@Override
 	public void start(Stage primaryStage) {
 		try {
@@ -39,6 +49,16 @@ public class Main extends Application {
 	
 	public static void main(String[] args) {
 		launch(args);
+	}
+	
+	private Node makeDraggable(final Node node){
+		final DragContext dragContext = new DragContext();
+		final Group wrapGroup = new Group(node);
+		
+		wrapGroup.addEventFilter(MouseEvent.ANY, 
+				e -> {
+					if(dragModeActive)
+				});
 	}
 	
 	private static Node createLoginPanel(){
@@ -74,7 +94,7 @@ public class Main extends Application {
 		
 		panel.setAlignment(Pos.BOTTOM_LEFT);
 		
-		
+		configureBorder(panel);
 		return panel;
 	}
 	
@@ -91,6 +111,7 @@ public class Main extends Application {
 		final HBox panel = createHBox(6, acceptButton, declineButton, acceptanceLabel);
 		panel.setAlignment(Pos.CENTER_LEFT);
 		
+		configureBorder(panel);
 		return panel;
 	}
 	
@@ -106,7 +127,7 @@ public class Main extends Application {
 										new Label("Progreso: "),
 										slider,
 										progressIndicator);
-		//configureBorder(panel);
+		configureBorder(panel);
 		return panel;
 	}
 	
@@ -133,5 +154,21 @@ public class Main extends Application {
 		radioButton.setSelected(selected);
 		
 		return radioButton;
+	}
+	
+	private static void configureBorder(final Region region)
+	{
+		region.setStyle("-fx-background-color: white;"
+							+ "-fx-border-color: black;"
+							+ "-fx-border-width: 1;"
+							+ "-fx-border-radius: 6;"
+							+ "-fx-padding: 6;");
+	}
+	
+	private static final class DragContext {
+		public double mouseAnchorX;
+		public double mouseAnchorY;
+		public double initialTranslateX;
+		public double initialTranslateY;
 	}
 }
