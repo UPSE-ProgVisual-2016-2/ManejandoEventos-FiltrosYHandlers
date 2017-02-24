@@ -1,17 +1,22 @@
 package application;
 	
+
+
 import javafx.application.Application;
 import javafx.beans.binding.Binding;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -24,6 +29,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
@@ -37,11 +43,38 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			BorderPane root = new BorderPane();
-			Scene scene = new Scene(root,400,400);
-			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			final Node loginPanel = 
+					makeDraggable(createLoginPanel());
+			final Node confirmationPanel = 
+					makeDraggable(createConfirmationPanel());
+			final Node progressPanel = 
+					makeDraggable(createProgressPanel());
+				
+			loginPanel.relocate(0, 0);
+			confirmationPanel.relocate(0, 67);
+			progressPanel.relocate(0, 106);
+			
+			final Pane panelsPane = new Pane();
+			panelsPane.getChildren().addAll(loginPanel, confirmationPanel, progressPanel);
+			
+			final BorderPane sceneRoot = new BorderPane();
+			
+			BorderPane.setAlignment(panelsPane, Pos.TOP_LEFT);
+			sceneRoot.setCenter(panelsPane);
+			
+			final CheckBox dragModeCheckbox = new CheckBox("Modo de Arrastre");
+			//Insets permite definir los 4 lados de un contenedor (norte, sur, este, oeste)
+			BorderPane.setMargin(dragModeCheckbox, new Insets(6));
+			sceneRoot.setBottom(dragModeCheckbox);
+
+			//Amarrando la propiedad global a la del checkbox
+			dragModeActiveProperty.bind(dragModeCheckbox.selectedProperty());
+		
+			final Scene scene = new Scene(sceneRoot, 400, 300);
 			primaryStage.setScene(scene);
+			primaryStage.setTitle("Filtros con paneles moviles");
 			primaryStage.show();
+			
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -57,8 +90,43 @@ public class Main extends Application {
 		
 		wrapGroup.addEventFilter(MouseEvent.ANY, 
 				e -> {
-					if(dragModeActive)
+					if(dragModeActiveProperty.get())
+					{
+						//Filtra cualquier evento del mouse
+						//hacia sus hijos
+						e.consume();
+					}
 				});
+		
+		wrapGroup.addEventFilter(MouseEvent.MOUSE_PRESSED,
+				new EventHandler<MouseEvent>() {
+
+					@Override
+					public void handle(MouseEvent mouseEvent) {
+						if(dragModeActiveProperty.get())
+						{
+							//Guardar las coordinadas iniciales
+							//de la posicion del mouse.
+							dragContext.mouseAnchorX = mouseEvent.getX();
+							dragContext.mouseAnchorY = mouseEvent.getY();
+							dragContext.initialTranslateX = node.getTranslateX();
+							dragContext.initialTranslateY = node.getTranslateY();
+						}
+					}
+				});
+		
+		wrapGroup.addEventFilter(MouseEvent.MOUSE_DRAGGED,
+				e -> {
+					if(dragModeActiveProperty.get())
+					{
+						node.setTranslateX(dragContext.initialTranslateX
+								+ e.getX() - dragContext.mouseAnchorX);
+						node.setTranslateY(dragContext.initialTranslateY
+								+ e.getY() - dragContext.mouseAnchorY);
+					}
+				});
+		
+		return wrapGroup;
 	}
 	
 	private static Node createLoginPanel(){
