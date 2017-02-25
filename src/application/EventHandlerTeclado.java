@@ -13,8 +13,10 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.geometry.Insets;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
@@ -30,7 +32,15 @@ public class EventHandlerTeclado extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		// TODO Auto-generated method stub
+		final Keyboard keyboard = new Keyboard(new Key(KeyCode.A),
+												new Key(KeyCode.S),
+												new Key(KeyCode.D),
+												new Key(KeyCode.F));
+		
+		final Scene scene = new Scene(new Group(keyboard.createNode()));
+		primaryStage.setScene(scene);
+		primaryStage.setTitle("Ejemplo Teclado");
+		primaryStage.show();
 
 	}
 
@@ -85,7 +95,7 @@ public class EventHandlerTeclado extends Application {
 				
 					};
 			keyNode.setOnKeyPressed(keyEventHandler);
-			keyNode.setOnKeyPressed(keyEventHandler);
+			keyNode.setOnKeyReleased(keyEventHandler);
 		}
 		
 		public Node createNode()
